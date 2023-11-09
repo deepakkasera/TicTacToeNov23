@@ -130,14 +130,60 @@ public class Game {
 
     }
 
-    public void makeMove(Board board) {
+    private boolean validateMove(Move move) {
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+
+        return row < board.getDimension() && row >= 0 && col < getBoard().getDimension() && col >= 0 &&
+                board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY);
+    }
+
+    private boolean checkWinner(Board board, Move move) {
+        for (WinningStrategy winningStrategy : winningStrategies) {
+            if (winningStrategy.checkWinner(move, board)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void makeMove() {
         //Current player to make the move.
         Player currentPlayer = players.get(nextMovePlayerIndex);
 
         System.out.println("It is " + currentPlayer.getName() + "'s move.");
-        Move move = currentPlayer.makeMove(board);
+        Move move = currentPlayer.makeMove(this.board);
 
         System.out.println(currentPlayer.getName() + " has made a move at Row: " + move.getCell().getRow() +
                 ", col: " + move.getCell().getCol() + ".");
+
+        //Validate the move before we apply the move on Board.
+        if (!validateMove(move)) {
+            System.out.println("Invalid move by player: " + currentPlayer.getName());
+            return;
+        }
+
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+        Cell finalCellToMakeMove = board.getBoard().get(row).get(col);
+        finalCellToMakeMove.setCellState(CellState.FILLED);
+        finalCellToMakeMove.setPlayer(currentPlayer);
+
+        Move finalMove = new Move(finalCellToMakeMove, currentPlayer);
+        moves.add(finalMove);
+
+        nextMovePlayerIndex += 1;
+        nextMovePlayerIndex %= players.size();
+
+        //Once a player has made move, check the winner.
+        //checkWinner.
+        if (checkWinner(board, finalMove)) {
+            gameState = GameState.ENDED;
+            winner = currentPlayer;
+        } else if (moves.size() == board.getDimension() * board.getDimension()) {
+            //Game has DRAWN
+            gameState = GameState.DRAW;
+        }
     }
 }

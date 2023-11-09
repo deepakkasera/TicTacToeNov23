@@ -7,6 +7,22 @@ public class Board {
     private int dimension;
     private List<List<Cell>> board;
 
+    public int getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
+    }
+
+    public List<List<Cell>> getBoard() {
+        return board;
+    }
+
+    public void setBoard(List<List<Cell>> board) {
+        this.board = board;
+    }
+
     public Board(int n) {
         //Initialize a board of size * size.
         this.dimension = n;
@@ -26,9 +42,9 @@ public class Board {
             for (int j = 0; j < dimension; j++) {
                 Cell cell = board.get(i).get(j);
                 if (cell.getCellState().equals(CellState.EMPTY)) {
-                    System.out.println("|  |");
+                    System.out.print("|  |");
                 } else {
-                    System.out.println("|" + cell.getPlayer().getSymbol() + "|");
+                    System.out.print("|" + cell.getPlayer().getSymbol().getSymbol() + "|");
                 }
             }
             System.out.println();

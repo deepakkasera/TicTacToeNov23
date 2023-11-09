@@ -9,12 +9,16 @@ import java.util.List;
 public class GameController {
 
     public Game startGame(int boardDimension, List<Player> players,
-                          List<WinningStrategy> winningStrategies) {
-        return null;
+                          List<WinningStrategy> winningStrategies) throws Exception {
+        return Game.getBuilder()
+                .setDimension(boardDimension)
+                .setPlayers(players)
+                .setWinningStrategies(winningStrategies)
+                .build();
     }
 
     public void makeMove(Game game) {
-        game.makeMove();
+        game.makeMove(game.getBoard());
     }
 
     public void displayBoard(Game game) {

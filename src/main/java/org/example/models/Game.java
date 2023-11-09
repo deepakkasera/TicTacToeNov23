@@ -1,8 +1,8 @@
 package org.example.models;
 
+import org.example.exceptions.GameInvalidationException;
 import org.example.strategies.winningStrategies.WinningStrategy;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,56 @@ public class Game {
     private List<Move> moves;
     private List<WinningStrategy> winningStrategies;
 
-    public Game(int dimension, List<Player> players,
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
+    //Static Inner Builder bClass
+    public static class Builder {
+        private int dimension;
+        private List<Player> players;
+        private List<WinningStrategy> winningStrategies;
+
+//        private Builder() {
+//            this.players = new ArrayList<>();
+//            this.winningStrategies = new ArrayList<>();
+//            this.dimension = 0;
+//        }
+
+        public Builder setDimension(int dimension) {
+            this.dimension = dimension;
+            return this;
+        }
+
+        public Builder setPlayers(List<Player> players) {
+            this.players = players;
+            return this;
+        }
+
+        public Builder setWinningStrategies(List<WinningStrategy> winningStrategies) {
+            this.winningStrategies = winningStrategies;
+            return this;
+        }
+
+        private boolean validate() {
+            //Validations. TODO
+            //1. Only one Bot is allowed per game.
+            //2. NO 2 players should have the same symbol.
+            return true;
+        }
+
+        public Game build() throws Exception {
+            //validate.
+            if (!validate()) {
+                throw new GameInvalidationException("Invalid game");
+            }
+
+            //create the Game object.
+            return new Game(dimension, players, winningStrategies);
+        }
+    }
+
+    private Game(int dimension, List<Player> players,
                 List<WinningStrategy> winningStrategies) {
         this.board = new Board(dimension);
         this.gameState = GameState.IN_PROGRESS;
@@ -24,9 +73,6 @@ public class Game {
         this.winningStrategies = winningStrategies;
         this.players = players;
     }
-
-    //Builder -> HW.
-
 
     public Board getBoard() {
         return board;
@@ -84,7 +130,14 @@ public class Game {
 
     }
 
-    public void makeMove() {
+    public void makeMove(Board board) {
+        //Current player to make the move.
+        Player currentPlayer = players.get(nextMovePlayerIndex);
 
+        System.out.println("It is " + currentPlayer.getName() + "'s move.");
+        Move move = currentPlayer.makeMove(board);
+
+        System.out.println(currentPlayer.getName() + " has made a move at Row: " + move.getCell().getRow() +
+                ", col: " + move.getCell().getCol() + ".");
     }
 }
